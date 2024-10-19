@@ -9,7 +9,7 @@ const CACHE = `cache-${version}`;
 const ASSETS = [
     ...build, // the app itself
     ...files, // everything in `static`
-    '/' // the root index.html
+    '/', // the root index.html
 ].filter((p) => !/(^|\/)\.[^\/]/.test(p));
 
 self.addEventListener('install', ((event: ExtendableEvent) => {
@@ -42,7 +42,7 @@ self.addEventListener('fetch', ((event: FetchEvent) => {
 
     if (ASSETS.includes(url.pathname)) {
         event.respondWith(respond(url.pathname));
-    } else if (!import.meta.env.DEV) {
+    } else if (!import.meta.env.DEV && !url.pathname.startsWith('/_app/')) {
         event.respondWith(respond('/'));
     }
 }) as any);
