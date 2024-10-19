@@ -21,6 +21,7 @@ jobs:
         run: |
           rm -rf "src/routes/(dev)"
           bun run build
+          cp src/.htaccess build/
         env:
           PUBLIC_TURBO_CPS: ${{ vars.TURBO_CPS }}
       - name: Archive Release
