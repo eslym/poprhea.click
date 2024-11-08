@@ -6,21 +6,35 @@
     import audioOpen from '$lib/audio/open.ogg';
     import audioShut from '$lib/audio/shut.ogg';
 
-    import { derived } from 'svelte/store';
-
     const BASE_FAST = Number.parseFloat(PUBLIC_TURBO_CPS);
 
-    let FAST = BASE_FAST;
+    let FAST = $state(BASE_FAST);
 
     let interval = undefined;
     let latestPop = $localPop;
-    let pps = 0;
-    let open = false;
+    let pps = $state(0);
+    let open = $state(false);
 
-    let audioOpenEl: HTMLAudioElement = undefined as any;
-    let audioShutEl: HTMLAudioElement = undefined as any;
+    let audioOpenEl: HTMLAudioElement = $state(undefined as any);
+    let audioShutEl: HTMLAudioElement = $state(undefined as any);
 
-    let subtitle = derived(localPop, (pop: number) => {
+    let screenWidth = $state(window.innerWidth);
+
+    let subtitle = $derived(mapSubtitle($localPop));
+
+    let turbo = $derived(pps > FAST);
+
+    let scale = $derived(Math.min(1400, screenWidth * 0.9) / 800);
+
+    onMount(() => {
+        setInterval(() => {
+            pps = ($localPop - latestPop) / 5;
+            latestPop = $localPop;
+        }, 5000);
+        return () => clearInterval(interval);
+    });
+
+    function mapSubtitle(pop: number) {
         if (pop === 1) {
             return '是什麼讓你覺得這東西真的存在？';
         }
@@ -37,17 +51,7 @@
             return '你這麼無聊為何不去看Youtube？';
         }
         return undefined;
-    });
-
-    $: turbo = pps > FAST;
-
-    onMount(() => {
-        setInterval(() => {
-            pps = ($localPop - latestPop) / 5;
-            latestPop = $localPop;
-        }, 5000);
-        return () => clearInterval(interval);
-    });
+    }
 
     function onDown(ev: MouseEvent) {
         if (ev.buttons === 1) {
@@ -57,7 +61,7 @@
 
     function onUp(ev: MouseEvent) {
         if (ev.buttons !== 1) {
-            end();
+            end(ev);
             FAST = BASE_FAST;
         }
     }
@@ -67,13 +71,19 @@
         audioOpenEl.play();
     }
 
-    function end() {
+    function end(ev: Event) {
+        ignore(ev);
         if (open) {
             audioShutEl.play();
             open = false;
             $localPop++;
             FAST = BASE_FAST * 1.8;
         }
+    }
+
+    function ignore(ev: Event) {
+        ev.preventDefault();
+        ev.stopPropagation();
     }
 </script>
 
@@ -87,12 +97,14 @@
     </style>
 </svelte:head>
 
+<svelte:window bind:innerWidth={screenWidth} />
+
 <svelte:body
-    on:selectstart|preventDefault|stopPropagation={() => {}}
-    on:touchstart={down}
-    on:touchend|preventDefault|stopPropagation={end}
-    on:mousedown={onDown}
-    on:mouseup={onUp}
+    onselectstart={ignore}
+    ontouchstart={down}
+    ontouchend={end}
+    onmousedown={onDown}
+    onmouseup={onUp}
 />
 
 <audio src={audioOpen} bind:this={audioOpenEl} style="display:none;"></audio>
@@ -105,33 +117,35 @@
             <div class="unit">Rhea Corey</div>
         </div>
     {/if}
-    <div class="rhea">
-        <enhanced:img
-            class="rhea"
-            class:hide={!open || turbo}
-            alt=""
-            src="$lib/images/rhea_open.png?w=600;800&format=png"
-        />
-        <enhanced:img
-            class="rhea"
-            class:hide={open || turbo}
-            alt=""
-            src="$lib/images/rhea_shut.png?w=600;800&format=png"
-        />
-        <enhanced:img
-            class="rhea"
-            class:hide={!open || !turbo}
-            alt=""
-            src="$lib/images/turbo_rhea_open.png?w=600;800&format=png"
-        />
-        <enhanced:img
-            class="rhea"
-            class:hide={open || !turbo}
-            alt=""
-            src="$lib/images/turbo_rhea_shut.png?w=600;800&format=png"
-        />
+    <div class="locator">
+        <div class="rhea" style:--scale={scale}>
+            <enhanced:img
+                class="rhea"
+                class:hide={!open || turbo}
+                alt=""
+                src="$lib/images/rhea_open.png?w=400;600;800&format=png"
+            />
+            <enhanced:img
+                class="rhea"
+                class:hide={open || turbo}
+                alt=""
+                src="$lib/images/rhea_shut.png?w=400;600;800&format=png"
+            />
+            <enhanced:img
+                class="rhea"
+                class:hide={!open || !turbo}
+                alt=""
+                src="$lib/images/turbo_rhea_open.png?w=400;600;800&format=png"
+            />
+            <enhanced:img
+                class="rhea"
+                class:hide={open || !turbo}
+                alt=""
+                src="$lib/images/turbo_rhea_shut.png?w=600;800&format=png"
+            />
+        </div>
     </div>
-    {#if $subtitle}
-        <div class="subtitle">{$subtitle}</div>
+    {#if subtitle}
+        <div class="subtitle">{subtitle}</div>
     {/if}
 </div>

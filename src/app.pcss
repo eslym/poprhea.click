@@ -115,18 +115,30 @@ div.subtitle {
         black 3px 3px 10px;
 }
 
-div.rhea {
+div.locator {
+    --shift: 200px;
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: -20%;
-    width: 100%;
+    width: 0;
+    height: 0;
+    max-width: 0;
+    max-height: 0;
+    top: calc(20% + var(--shift));
+    left: 50%;
+    overflow: visible;
+}
+
+div.rhea {
+    width: 800px;
+    height: 1416px;
+    margin-left: calc(var(--scale) * -400px);
+    margin-top: calc(var(--scale) * -200px);
+    transform: scale(var(--scale));
+    transform-origin: top left;
 }
 
 img.rhea {
     margin: 0 auto;
     width: 100%;
-    max-width: 1400px;
     height: auto;
 }
 
@@ -134,13 +146,10 @@ img.rhea.hide {
     display: none;
 }
 
-@media (orientation: landscape) {
-    div.rhea {
-        top: 20%;
+@media (orientation: landscape) and (max-height: 800px) {
+    div.locator {
+        --shift: 150px;
     }
-}
-
-@media (max-width: 800px) {
     div.popCount {
         font-size: 3em;
     }
@@ -149,7 +158,10 @@ img.rhea.hide {
     }
 }
 
-@media (max-width: 600px) {
+@media (orientation: landscape) and (max-height: 600px) {
+    div.locator {
+        --shift: 100px;
+    }
     div.popCount {
         font-size: 2em;
     }
@@ -158,12 +170,21 @@ img.rhea.hide {
     }
 }
 
-@media (max-width: 400px) {
+@media (orientation: landscape) and (max-height: 400px) {
+    div.locator {
+        --shift: 60px;
+    }
     div.popCount {
         font-size: 2.5em;
     }
     div.subtitle {
         font-size: 1.5em;
+    }
+}
+
+@media (orientation: portrait) {
+    div.locator {
+        --shift: 100px;
     }
 }
 

@@ -2,21 +2,26 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
-import { build, files, version } from '$service-worker';
+import { build, files, prerendered, version } from '$service-worker';
+
+const FALLBACK = '/';
+
+const UNCACHEABLE = new Set(['/_app/version.json', '/_app/env.js']);
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 const ASSETS = [
     ...build, // the app itself
     ...files, // everything in `static`
-    '/', // the root index.html
-].filter((p) => !/(^|\/)\.[^\/]/.test(p));
+    ...prerendered,
+    FALLBACK // the fallback page
+];
 
 self.addEventListener('install', ((event: ExtendableEvent) => {
     // Create a new cache and add all files to it
     async function addFilesToCache() {
         const cache = await caches.open(CACHE);
-        await cache.addAll(ASSETS);
+        await cache.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })));
     }
 
     event.waitUntil(addFilesToCache());
@@ -38,12 +43,10 @@ self.addEventListener('fetch', ((event: FetchEvent) => {
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
 
-    if (url.origin !== location.origin) return;
-
     if (ASSETS.includes(url.pathname)) {
         event.respondWith(respond(url.pathname));
-    } else if (!import.meta.env.DEV && !url.pathname.startsWith('/_app/')) {
-        event.respondWith(respond('/'));
+    } else if (!import.meta.env.DEV && !UNCACHEABLE.has(url.pathname)) {
+        event.respondWith(respond(FALLBACK));
     }
 }) as any);
 

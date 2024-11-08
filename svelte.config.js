@@ -2,7 +2,7 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { execSync } from 'child_process';
 
-let version = process.env.GIT_COMMIT;
+let version = process.env.GITHUB_SHA;
 
 if (!version) {
     try {
