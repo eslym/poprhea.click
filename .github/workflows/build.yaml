@@ -24,6 +24,7 @@ jobs:
           cp src/.htaccess build/
         env:
           PUBLIC_TURBO_CPS: ${{ vars.TURBO_CPS }}
+          GITHUB_SHA: ${{ github.sha }}
       - name: Archive Release
         uses: actions/upload-artifact@v4
         with:
