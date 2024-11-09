@@ -17,17 +17,19 @@ const ASSETS = [
     FALLBACK // the fallback page
 ];
 
-self.addEventListener('install', ((event: ExtendableEvent) => {
+const sw = self as ServiceWorkerGlobalScope & typeof globalThis;
+
+sw.addEventListener('install', ((event: ExtendableEvent) => {
     // Create a new cache and add all files to it
     async function addFilesToCache() {
         const cache = await caches.open(CACHE);
         await cache.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })));
     }
 
-    event.waitUntil(addFilesToCache());
-}) as any);
+    event.waitUntil(Promise.all([addFilesToCache(), sw.skipWaiting()]));
+}));
 
-self.addEventListener('activate', ((event: ExtendableEvent) => {
+sw.addEventListener('activate', ((event: ExtendableEvent) => {
     // Remove previous cached data from disk
     async function deleteOldCaches() {
         for (const key of await caches.keys()) {
@@ -36,9 +38,9 @@ self.addEventListener('activate', ((event: ExtendableEvent) => {
     }
 
     event.waitUntil(deleteOldCaches());
-}) as any);
+}));
 
-self.addEventListener('fetch', ((event: FetchEvent) => {
+sw.addEventListener('fetch', ((event: FetchEvent) => {
     // ignore POST requests etc
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
@@ -48,7 +50,7 @@ self.addEventListener('fetch', ((event: FetchEvent) => {
     } else if (!import.meta.env.DEV && !UNCACHEABLE.has(url.pathname)) {
         event.respondWith(respond(FALLBACK));
     }
-}) as any);
+}));
 
 async function respond(pathname: string) {
     const cache = await caches.open(CACHE);
