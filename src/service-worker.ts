@@ -52,8 +52,8 @@ sw.addEventListener('fetch', (event: FetchEvent) => {
     const url = new URL(event.request.url);
     if (url.origin !== location.origin) return;
 
-    if (ASSETS.includes(url.href)) {
-        event.respondWith(respond(url.href));
+    if (ASSETS.includes(url.pathname)) {
+        event.respondWith(respond(url.pathname));
     } else if (!import.meta.env.DEV && !UNCACHEABLE.has(url.pathname)) {
         event.respondWith(respond(FALLBACK));
     }
