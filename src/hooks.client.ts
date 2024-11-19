@@ -1,10 +1,2 @@
 import './app.pcss';
-import '@fontsource/noto-sans-tc/100.css';
-import '@fontsource/noto-sans-tc/200.css';
-import '@fontsource/noto-sans-tc/300.css';
 import '@fontsource/noto-sans-tc/400.css';
-import '@fontsource/noto-sans-tc/500.css';
-import '@fontsource/noto-sans-tc/600.css';
-import '@fontsource/noto-sans-tc/700.css';
-import '@fontsource/noto-sans-tc/800.css';
-import '@fontsource/noto-sans-tc/900.css';

@@ -101,6 +101,7 @@
 
 <svelte:body
     onselectstart={ignore}
+    onselect={ignore}
     ontouchstart={down}
     ontouchend={end}
     onmousedown={onDown}
