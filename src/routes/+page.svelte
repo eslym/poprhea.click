@@ -19,12 +19,16 @@
     let audioShutEl: HTMLAudioElement = $state(undefined as any);
 
     let screenWidth = $state(window.innerWidth);
+    let screenHeight = $state(window.innerHeight);
 
     let subtitle = $derived(mapSubtitle($localPop));
 
     let turbo = $derived(pps > FAST);
 
-    let scale = $derived(Math.min(1400, screenWidth * 0.9) / 800);
+    let scaleW = $derived(Math.min(800, screenWidth) / 400);
+    let scaleH = $derived(Math.min(800, screenHeight) / 600);
+
+    let scale = $derived(Math.min(scaleH, scaleW));
 
     onMount(() => {
         setInterval(() => {
@@ -97,7 +101,7 @@
     </style>
 </svelte:head>
 
-<svelte:window bind:innerWidth={screenWidth} />
+<svelte:window bind:innerHeight={screenHeight} bind:innerWidth={screenWidth} />
 
 <svelte:body
     onselectstart={ignore}
@@ -124,25 +128,25 @@
                 class="rhea"
                 class:hide={!open || turbo}
                 alt=""
-                src="$lib/images/rhea_open.png?w=400;600;800&format=png"
+                src="$lib/images/rhea-s.png?w=400;600;800&format=png"
             />
             <enhanced:img
                 class="rhea"
                 class:hide={open || turbo}
                 alt=""
-                src="$lib/images/rhea_shut.png?w=400;600;800&format=png"
+                src="$lib/images/rhea-o.png?w=400;600;800&format=png"
             />
             <enhanced:img
                 class="rhea"
                 class:hide={!open || !turbo}
                 alt=""
-                src="$lib/images/turbo_rhea_open.png?w=400;600;800&format=png"
+                src="$lib/images/turbo-rhea-o.png?w=400;600;800&format=png"
             />
             <enhanced:img
                 class="rhea"
                 class:hide={open || !turbo}
                 alt=""
-                src="$lib/images/turbo_rhea_shut.png?w=600;800&format=png"
+                src="$lib/images/turbo-rhea-s.png?w=600;800&format=png"
             />
         </div>
     </div>

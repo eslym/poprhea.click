@@ -36,8 +36,9 @@ body {
 div.sky {
     text-align: center;
 
-    background-image: url('./lib/images/sky.png');
-    background-repeat: repeat;
+    background-image: url('./lib/images/sky.jpg');
+    background-repeat: none;
+    background-size: cover;
 
     width: 100vw;
     height: 100vh;
@@ -45,10 +46,6 @@ div.sky {
     overflow: hidden;
 
     pointer-events: none;
-}
-
-div.sky.turbo {
-    background-image: url('./lib/images/turbo_sky.png');
 }
 
 div.popCount {
@@ -117,22 +114,22 @@ div.subtitle {
 }
 
 div.locator {
-    --shift: 200px;
     position: fixed;
     width: 0;
     height: 0;
     max-width: 0;
     max-height: 0;
-    top: calc(20% + var(--shift));
+    top: 100%;
     left: 50%;
     overflow: visible;
 }
 
 div.rhea {
+    --anchor-y: calc(var(--shift, 0px) + -640px);
     width: 800px;
     height: 1416px;
-    margin-left: calc(var(--scale) * -400px);
-    margin-top: calc(var(--scale) * -200px);
+    margin-left: calc(var(--scale) * -380px);
+    margin-top: calc(var(--scale) * var(--anchor-y));
     transform: scale(var(--scale));
     transform-origin: top left;
 }
@@ -148,9 +145,6 @@ img.rhea.hide {
 }
 
 @media (orientation: landscape) and (max-height: 800px) {
-    div.locator {
-        --shift: 150px;
-    }
     div.popCount {
         font-size: 3em;
     }
@@ -160,9 +154,6 @@ img.rhea.hide {
 }
 
 @media (orientation: landscape) and (max-height: 600px) {
-    div.locator {
-        --shift: 100px;
-    }
     div.popCount {
         font-size: 2em;
     }
@@ -172,9 +163,6 @@ img.rhea.hide {
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
-    div.locator {
-        --shift: 60px;
-    }
     div.popCount {
         font-size: 2.5em;
     }
@@ -183,9 +171,21 @@ img.rhea.hide {
     }
 }
 
+@media (orientation: portrait) and (max-width: 600px) {
+    div.subtitle {
+        font-size: 2em;
+    }
+}
+
+@media (orientation: portrait) and (max-width: 600px) {
+    div.subtitle {
+        font-size: 2em;
+    }
+}
+
 @media (orientation: portrait) {
     div.locator {
-        --shift: 100px;
+        --shift: 30px;
     }
 }
 
