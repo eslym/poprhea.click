@@ -8,6 +8,10 @@ jobs:
   build:
     name: Build Artifact
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,30 +29,11 @@ jobs:
         env:
           PUBLIC_TURBO_CPS: ${{ vars.TURBO_CPS }}
           GITHUB_SHA: ${{ github.sha }}
-      - name: Archive Release
-        uses: actions/upload-artifact@v4
+
+      - name: Prepare Artifacts
+        uses: actions/upload-pages-artifact@v4
         with:
-          name: release-${{ github.sha }}
-          path: build/
-          include-hidden-files: true
-  deploy:
-    name: Deploy to Server
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: release-${{ github.sha }}
-          path: ./build/
-      - name: Deploy
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{secrets.DEPLOY_HOST}}
-          PORT: ${{secrets.DEPLOY_PORT}}
-          USER: ${{secrets.DEPLOY_USER}}
-          KEY: ${{secrets.DEPLOY_KEY}}
-          TARGET: ${{secrets.DEPLOY_PATH}}
-          SOURCE: ./build/
-          ARGS: -avz --delete
-          MODE: push
+          path: ./build
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
